@@ -157,7 +157,7 @@ void atendimentoAutomatico(int totalUT) {
     } // Fim da Fase de Atendimento Final
 
     cout << "\n>>> Simulação concluída. Todas as filas vazias e atendimentos finalizados.\n";
-    exibe(filaTriagem);
+    imprimeFila(filaTriagem);
     exibe(filaAtendimento);
 }
 
