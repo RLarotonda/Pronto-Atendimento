@@ -10,15 +10,14 @@ using namespace std;
 noTriagem* filaTriagem = NULL;
 noAtendimento* filaAtendimento = NULL;
 
-int senhaGlobal = 1;
+int senhaGlobal = 1; // Aumenta a cada entrada de paciente, tanto automatica quanto manual
 
-string nomesExemplo[] = {"Carlos", "Ana", "João", "Mariana", "Pedro", "Beatriz", "Lucas", "Fernanda", "Luana", "Rafael"};
-
-// A estrutura PacienteEmTriagem e a variável pacienteAtualTriagem foram removidas,
-// pois a triagem agora é instantânea e não precisa de um estado intermediário.
+string nomesExemplo[] = {
+    "Carlos", "Ana", "João", "Mariana", "Pedro", "Beatriz", "Lucas", "Fernanda", "Luana", "Rafael"
+}; // vetor para nomes aleatorios automaticos
 
 void chegadaPacientesAutomatico() {
-    string nome = nomesExemplo[rand() % 10]; 
+    string nome = nomesExemplo[rand() % 10]; // Escolhe um dos nomes do array nomeExemplo
     cout << "Paciente " << nome << " chegou com a senha " << senhaGlobal << " (automatico).\n";
     filaTriagem = insereFila(filaTriagem, senhaGlobal, nome);
     imprimeFila(filaTriagem);
@@ -28,12 +27,12 @@ void chegadaPacientesAutomatico() {
 int obterPrioridade() {
     int escolha;
     cout << "\nO que o paciente está sentindo?\n";
-    cout << "1. Parada cardíaca (Prioridade 0 - Mais alta)\n";
-    cout << "2. Hemorragia (Prioridade 0 - Mais alta)\n";
-    cout << "3. Febre alta (Prioridade 1 - Média)\n";
-    cout << "4. Fratura (Prioridade 1 - Média)\n";
-    cout << "5. Dor de cabeça (Prioridade 2 - Mais baixa)\n";
-    cout << "6. Resfriado (Prioridade 2 - Mais baixa)\n";
+    cout << "1. Parada cardíaca\n";
+    cout << "2. Hemorragia\n";
+    cout << "3. Febre alta\n";
+    cout << "4. Fratura\n";
+    cout << "5. Dor de cabeça\n";
+    cout << "6. Resfriado\n";
     cout << "Opção: ";
     cin >> escolha;
 
@@ -49,10 +48,10 @@ void chegadaPacienteManual() {
 
     int prioridadeManual = obterPrioridade();
 
-    cout << "Paciente " << nomePaciente << " chegou! Sua senha de atendimento é: " << senhaGlobal << ". Aguarde pelo atendimento." << endl;
+    cout << "Bem-vindo(a) " << nomePaciente << "! Sua senha de atendimento é: " << senhaGlobal << ". Aguarde pelo atendimento." << endl;
     
     filaAtendimento = insereFP(filaAtendimento, senhaGlobal, prioridadeManual, nomePaciente);
-    cout << "Paciente " << nomePaciente << " (Senha " << senhaGlobal << ") classificado como ";
+    cout << "Segundo os sintomas do paciente " << nomePaciente << " (Senha " << senhaGlobal << ") classificamos o grau como ";
     if (prioridadeManual == 0) cout << "GRAVE.\n";
     else if (prioridadeManual == 1) cout << "MÉDIA.\n";
     else cout << "LEVE.\n";
@@ -62,9 +61,8 @@ void chegadaPacienteManual() {
     senhaGlobal++;
 }
 
-// MODIFICADA: Gerencia o processo de triagem para ser instantâneo (0 UT de atraso)
 void gerenciarTriagem(int ut) {
-    // Se houver pacientes na fila de triagem, processa um imediatamente.
+    // Se houver pacientes na fila de triagem, processa um imediatamente
     if (filaTriagem != NULL) {
         int senhaTriagem;
         string nomeTriagem;
@@ -72,12 +70,12 @@ void gerenciarTriagem(int ut) {
         cout << "Paciente " << nomeTriagem << " (Senha " << senhaTriagem << ") saiu da triagem na UT " << ut << ".\n";
         imprimeFila(filaTriagem); // Mostra a fila de triagem após a remoção
 
-        // Para pacientes automáticos, a prioridade ainda é aleatória
+        // Para pacientes automáticos, a prioridade é aleatória
         int prioridadeGerada = rand() % 3; 
         
         filaAtendimento = insereFP(filaAtendimento, senhaTriagem, prioridadeGerada, nomeTriagem);
         
-        cout << "Paciente " << nomeTriagem << " classificado como ";
+        cout << "Paciente " << nomeTriagem << " classificado automaticamente como ";
         if (prioridadeGerada == 0) cout << "GRAVE.\n";
         else if (prioridadeGerada == 1) cout << "MÉDIA.\n";
         else cout << "LEVE.\n";
@@ -86,7 +84,6 @@ void gerenciarTriagem(int ut) {
     }
 }
 
-// Gerencia o processo de atendimento médico (sem alterações nesta função)
 void gerenciarAtendimento(int ut, bool& emAtendimento, int& senhaPacienteAtendimento, int& prioridadePacienteAtendimento, string& nomePacienteAtendimento, int& tempoRestante) {
     if (!emAtendimento && filaAtendimento != NULL) {
         filaAtendimento = removeFP(filaAtendimento, &senhaPacienteAtendimento, &prioridadePacienteAtendimento, nomePacienteAtendimento); 
@@ -100,16 +97,16 @@ void gerenciarAtendimento(int ut, bool& emAtendimento, int& senhaPacienteAtendim
         }
 
         emAtendimento = true;
-        cout << "Iniciando atendimento da senha " << senhaPacienteAtendimento
+        cout << "Iniciando atendimento paciente " << nomePacienteAtendimento << " senha " << senhaPacienteAtendimento
              << " (Prioridade: " << prioridadePacienteAtendimento << ") na UT " << ut << "...\n";
     }
 
     if (emAtendimento) {
         tempoRestante--;
-        cout << "Em atendimento: Senha " << senhaPacienteAtendimento
+        cout << "Em atendimento: " << nomePacienteAtendimento << " senha " << senhaPacienteAtendimento
              << " (restam " << tempoRestante << " ut).\n";
-        if (tempoRestante == 0) {
-            cout << "Atendimento da senha " << senhaPacienteAtendimento << " finalizado na UT " << ut << ".\n";
+        if (tempoRestante == 0) { // Quanto tempo restante acaba atendimento acaba
+            cout << "Atendimento do paciente " << nomePacienteAtendimento << " senha " << senhaPacienteAtendimento << " finalizado na UT " << ut << ".\n";
             emAtendimento = false;
         }
     }
@@ -117,7 +114,7 @@ void gerenciarAtendimento(int ut, bool& emAtendimento, int& senhaPacienteAtendim
 
 void atendimentoAutomatico(int totalUT) {
     int ut = 0;
-    int tempoRestante = 0; 
+    int tempoRestante = 0; // Usado para determinar demora do atendimento 4ut GRAVE, 2ut MEDIO  e 1ut LEVE
     int senhaPacienteAtendimento = 0;
     int prioridadePacienteAtendimento = 0;
     string nomePacienteAtendimento = "";
@@ -137,10 +134,10 @@ void atendimentoAutomatico(int totalUT) {
 
         if (pacienteUsuarioOpcao == 'S') {
             cin.ignore(); 
-            chegadaPacienteManual();
+            chegadaPacienteManual(); // Adiciona manualmente pacientes
         }
 
-        chegadaPacientesAutomatico();
+        chegadaPacientesAutomatico(); // Adiciona automaticamente pacientes
         
         // Chamadas das funções para gerenciar triagem e atendimento
         gerenciarTriagem(ut);
@@ -160,6 +157,8 @@ void atendimentoAutomatico(int totalUT) {
     } // Fim da Fase de Atendimento Final
 
     cout << "\n>>> Simulação concluída. Todas as filas vazias e atendimentos finalizados.\n";
+    exibe(filaTriagem);
+    exibe(filaAtendimento);
 }
 
 int main() {
@@ -168,7 +167,7 @@ int main() {
     cout << "Bem-vindo(a) ao pronto-socorro!" << endl;
     cout << "Aqui voce pode adicionar pacientes e analizar as filas" << endl;
     cout << "Além disso, serão adicionados pacientes automaticamente" << endl;
-    cout << "So determinar a quantidade de loops que teremos!" << endl;
+    cout << "So determinar a quantidade de vezes que chegara pacientes!" << endl;
 
     int tempo;
     cout << "Digite o número de unidades de tempo para simularmos a fase de chegadas: ";
