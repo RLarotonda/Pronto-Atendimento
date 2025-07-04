@@ -135,10 +135,9 @@ void atendimentoAutomatico(int totalUT) {
         if (pacienteUsuarioOpcao == 'S') {
             cin.ignore(); 
             chegadaPacienteManual(); // Adiciona manualmente pacientes
+        } else{
+            chegadaPacientesAutomatico(); // Adiciona automaticamente pacientes
         }
-
-        chegadaPacientesAutomatico(); // Adiciona automaticamente pacientes
-        
         // Chamadas das funções para gerenciar triagem e atendimento
         gerenciarTriagem(ut);
         gerenciarAtendimento(ut, emAtendimento, senhaPacienteAtendimento, prioridadePacienteAtendimento, nomePacienteAtendimento, tempoRestante);
